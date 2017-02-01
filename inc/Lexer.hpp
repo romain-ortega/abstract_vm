@@ -1,11 +1,11 @@
 #ifndef LEXER_H
 #define LEXER_H
-# include <iostream>
-
+# include <string> // std::string
+# include <list> // std::list
 class Lexer
 {
 private:
-	std::string _file;
+	std::list<std::string> _instrList;
 
 public:
 	Lexer();
@@ -14,8 +14,6 @@ public:
 	virtual ~Lexer();
 	Lexer & operator=(const Lexer &ref);
 
-	std::string getFile() const;
-	void setFile(std::string file);
+	std::list<std::string> getInstructionsList() const;
 };
-
 #endif /* LEXER_H */

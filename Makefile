@@ -7,11 +7,11 @@ SRC = main.cpp \
 			Lexer.cpp
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 
-FLAGS = -Wall -Wextra -Werror -I $(shell pwd)/inc/
-FLAGS_NC = -lncurses
+FLAGS = -Wall -Wextra -Werror -std=c++11 -I $(shell pwd)/inc/
+FLAGS_BOOST = -I ~/.brew/include/boost
 
 $(NAME): $(OBJ_DIR) $(OBJ)
-	clang++ $(FLAGS) $(FLAGS_NC) -o $(NAME) $(OBJ)
+	clang++ $(FLAGS) $(FLAGS_BOOST) -o $(NAME) $(OBJ)
 
 all: $(NAME)
 

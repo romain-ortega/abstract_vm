@@ -1,4 +1,5 @@
 #include <iostream>
+#include <list>
 #include "../inc/Lexer.hpp"
 
 int main(int argc, char *argv[])
@@ -12,6 +13,10 @@ int main(int argc, char *argv[])
 	} else {
 		avm = new Lexer();
 	}
+
+	std::list<std::string> list = avm->getInstructionsList();
+	for (std::list<std::string>::iterator iter = list.begin(); iter != list.end(); iter++)
+		std::cout << *iter << std::endl;
 
 	delete avm;
 	return 0;
