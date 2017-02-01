@@ -3,7 +3,8 @@ NAME = abstract_vm
 OBJ_DIR = obj
 SRC_DIR = src
 
-SRC = main.cpp
+SRC = main.cpp \
+			Lexer.cpp
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 
 FLAGS = -Wall -Wextra -Werror -I $(shell pwd)/inc/
