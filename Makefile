@@ -4,7 +4,6 @@ OBJ_DIR = obj
 SRC_DIR = src
 
 SRC = main.cpp \
-			Syntax.cpp \
 			Parser.cpp
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 
