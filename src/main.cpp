@@ -2,6 +2,7 @@
 #include <list>
 #include "../inc/Parser.hpp"
 #include "../inc/Grammar.hpp"
+#include "../inc/Skipper.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -21,12 +22,14 @@ int main(int argc, char *argv[])
 	// bool r = avm->parseInstructionList(iter_begin, iter_end, list);
 
 	std::string entry;
+	skipper<std::string::iterator> skip_parser;
 	instrValue<std::string::iterator> parser;
+
 	for (auto iter = iter_begin; iter != iter_end; iter++) {
 		entry = *iter;
 		std::string::iterator begin = entry.begin();
 		std::string::iterator end = entry.end();
-	  if (!qi::parse(begin, end, parser, parser.instr_value)) {
+	  if (!qi::phrase_parse(begin, end, parser, skip_parser, parser.instr_value)) {
 			std::cout << "-------------------------------- \n";
 			std::cout << "Parsing failed\n";
 			std::cout << "-------------------------------- \n";
