@@ -26,4 +26,36 @@ Parser & Parser::operator=(const Parser &ref) {
 	return *this;
 }
 
+bool Parser::parseExprList(std::list<std::string>::iterator iter_begin,
+std::list<std::string>::iterator iter_end) {
+	std::string entry;
+	Grammar<std::string::iterator> syntax_parser;
+
+	int i = 0;
+	bool success = true;
+	for (auto iter = iter_begin; iter != iter_end; iter++) {
+		entry = *iter;
+		i++;
+		std::string::iterator begin = entry.begin();
+		std::string::iterator end = entry.end();
+	  if (!qi::phrase_parse(begin, end, syntax_parser, qi::blank, this->_instr_value_array)) {
+			success = false;
+			std::cout << "Syntax error line ";
+			std::cout << i;
+			std::cout << std::endl;
+    }
+	}
+	std::cout << "found entries:" << std::endl;
+	std::cout << "--------------------------------" << std::endl;
+	pairs_t::iterator end = this->_instr_value_array.end();
+	for (pairs_t::iterator it = this->_instr_value_array.begin(); it != end; ++it)
+	{
+		std::cout << (*it).first;
+		if ((*it).second)
+			std::cout << ": " << boost::get<std::string>((*it).second);
+		std::cout << std::endl;
+	}
+	std::cout << "--------------------------------" << std::endl;
+	return success;
+}
 std::list<std::string> Parser::getExprList() const { return this->_exprList; }

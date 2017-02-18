@@ -8,7 +8,7 @@
 # include "Parser.hpp"
 namespace qi = boost::spirit::qi;
 
-typedef std::pair<std::string, boost::optional< boost::variant<int, double> > > pair_t;
+typedef std::pair<std::string, boost::optional<std::string> > pair_t;
 typedef std::vector<pair_t> pairs_t;
 #define BOOST_SPIRIT_DEBUG
 
@@ -35,20 +35,23 @@ struct Grammar
 												| qi::string("print")
 												| qi::string("exit"));
 		value            = (qi::string("int8")
-													>> '(' >> qi::int_ >> ')'
+													>> qi::char_('(') >> n >> qi::char_(')')
 												| qi::string("int16")
-													>> '(' >> qi::int_ >> ')'
+													>> qi::char_('(') >> n >> qi::char_(')')
 												| qi::string("int32")
-													>> '(' >> qi::int_ >> ')'
+													>> qi::char_('(') >> n >> qi::char_(')')
 												| qi::string("float")
-													>> '(' >> qi::float_ >> ')'
+													>> qi::char_('(') >> z >> qi::char_(')')
 												| qi::string("double")
-													>> '(' >> qi::float_ >> ')');
+													>> qi::char_('(') >> z >> qi::char_(')'));
+		n = -qi::char_('-') >> +qi::char_("0-9");
+		z = -qi::char_('-') >> +qi::char_("0-9") >> -(qi::char_('.') >> +qi::char_("0-9"));
 		BOOST_SPIRIT_DEBUG_NODES((base_expression)(pair)(instr)(value))
 	}
 
-	qi::rule<Iterator, pairs_t(), Skipper> base_expression;
-	qi::rule<Iterator, pair_t(), Skipper> pair;
-	qi::rule<Iterator, std::string(), Skipper> instr, value;
+	private:
+		qi::rule<Iterator, pairs_t(), Skipper> base_expression;
+		qi::rule<Iterator, pair_t(), Skipper> pair;
+		qi::rule<Iterator, std::string(), Skipper> instr, value, n, z;
 };
 #endif /* GRAMMAR_H */
