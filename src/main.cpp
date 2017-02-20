@@ -4,24 +4,25 @@
 #include "../inc/Grammar.hpp"
 
 int main(int argc, char *argv[]) {
-	Parser *avm;
-	int error = 0;
+	Parser *parser;
 
 	if (argc > 1) {
 		if (argc > 2)
 			std::cout << "Usage: ./abstract_vm [filanme (or read stdin)]" << std::endl;
-		avm = new Parser(argv[1]);
+		parser = new Parser(argv[1]); // expressions from file
 	} else {
-		avm = new Parser();
+		parser = new Parser(); // expressions from stdin
 	}
 
-	std::list<std::string> expr_list = avm->getExprList();
-	std::list<std::string>::iterator iter_begin = expr_list.begin();
-	std::list<std::string>::iterator iter_end = expr_list.end();
+	std::list<std::string> expr_list = parser->getExprList();
+	std::list<std::string>::const_iterator iter_begin = expr_list.begin();
+	std::list<std::string>::const_iterator iter_end = expr_list.end();
 
-	if (!avm->parseExprList(iter_begin, iter_end))
-		error += 1;
+	if (!parser->parseExprList(iter_begin, iter_end))
+		return 1; // syntax error
+	if (!parser->semanticCheck())
+		return 2; // semantic error
 
-	delete avm;
-	return error;
+	delete parser;
+	return 0;
 }

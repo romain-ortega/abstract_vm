@@ -2,25 +2,26 @@
 #define GRAMMAR_H
 # include <boost/spirit/include/qi.hpp>
 # include <boost/fusion/include/std_pair.hpp>
+# include <boost/fusion/include/std_tuple.hpp>
 # include <boost/variant.hpp>
 # include <iostream>
 # include "Skipper.hpp"
 # include "Parser.hpp"
 namespace qi = boost::spirit::qi;
 
-typedef std::pair<std::string, boost::optional<std::string> > pair_t;
-typedef std::vector<pair_t> pairs_t;
-#define BOOST_SPIRIT_DEBUG
+// instr (type) (value)
+typedef std::tuple<std::string, boost::optional<std::string>, boost::optional<std::string> > tuple_t;
+typedef std::vector<tuple_t> tuples_t;
 
 template <typename Iterator, typename Skipper = qi::blank_type >
 struct Grammar
-	: qi::grammar<Iterator, pairs_t(), Skipper>
+	: qi::grammar<Iterator, tuples_t(), Skipper>
 {
 	Grammar()
 		: Grammar::base_type(base_expression)
 	{
-		base_expression  = qi::eol | qi::lit(';') | pair;
-		pair             = instr >> -(value)
+		base_expression  = qi::eol | qi::lit(';') | tuple;
+		tuple            = instr >> -(type) >> -(value)
 												>> (qi::lit('\n')
 													| (qi::lit(';') >> *(qi::char_)));
 		instr            = (qi::string("push")
@@ -34,24 +35,20 @@ struct Grammar
 												| qi::string("mod")
 												| qi::string("print")
 												| qi::string("exit"));
-		value            = (qi::string("int8")
-													>> qi::char_('(') >> n >> qi::char_(')')
+		type             = qi::string("int8")
 												| qi::string("int16")
-													>> qi::char_('(') >> n >> qi::char_(')')
 												| qi::string("int32")
-													>> qi::char_('(') >> n >> qi::char_(')')
 												| qi::string("float")
-													>> qi::char_('(') >> z >> qi::char_(')')
-												| qi::string("double")
-													>> qi::char_('(') >> z >> qi::char_(')'));
+												| qi::string("double");
+		value            = '(' >> z >> ')'
+												|| '(' >> n >> ')';
 		n = -qi::char_('-') >> +qi::char_("0-9");
-		z = -qi::char_('-') >> +qi::char_("0-9") >> -(qi::char_('.') >> +qi::char_("0-9"));
-		BOOST_SPIRIT_DEBUG_NODES((base_expression)(pair)(instr)(value))
+		z = -qi::char_('-') >> +qi::char_("0-9") >> (qi::char_('.') >> +qi::char_("0-9"));
 	}
 
 	private:
-		qi::rule<Iterator, pairs_t(), Skipper> base_expression;
-		qi::rule<Iterator, pair_t(), Skipper> pair;
-		qi::rule<Iterator, std::string(), Skipper> instr, value, n, z;
+		qi::rule<Iterator, tuples_t(), Skipper> base_expression;
+		qi::rule<Iterator, tuple_t(), Skipper> tuple;
+		qi::rule<Iterator, std::string(), Skipper> instr, type, value, n, z;
 };
 #endif /* GRAMMAR_H */

@@ -10,7 +10,9 @@ class Parser
 {
 private:
 	std::list<std::string> _exprList; // contains all expressions
-	pairs_t _instr_value_array; // vector of std::pair(instr, value)
+	tuples_t _instr_value_array; // vector of std::tuple(instr, value)
+
+	bool _checkValue(std::string type, std::string value);
 
 public:
 	Parser();
@@ -19,8 +21,10 @@ public:
 	virtual ~Parser();
 	Parser & operator=(const Parser &ref);
 
-	bool parseExprList(std::list<std::string>::iterator iter_begin,
-std::list<std::string>::iterator iter_end);
+	bool parseExprList(std::list<std::string>::const_iterator iter_begin,
+std::list<std::string>::const_iterator iter_end);
+	bool semanticCheck();
+
 	std::list<std::string> getExprList() const;
 };
 #endif /* PARSER_H */
