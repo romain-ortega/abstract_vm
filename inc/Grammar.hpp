@@ -1,11 +1,8 @@
 #ifndef GRAMMAR_H
 #define GRAMMAR_H
 # include <boost/spirit/include/qi.hpp>
-# include <boost/fusion/include/std_pair.hpp>
 # include <boost/fusion/include/std_tuple.hpp>
-# include <boost/variant.hpp>
 # include <iostream>
-# include "Skipper.hpp"
 # include "Parser.hpp"
 namespace qi = boost::spirit::qi;
 

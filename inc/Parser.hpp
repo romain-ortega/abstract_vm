@@ -5,14 +5,15 @@
 # include <boost/spirit/include/qi_core.hpp> // include files for boost spirit
 # include <boost/config/warning_disable.hpp>
 # include <boost/spirit/include/qi.hpp>
-# include "Grammar.hpp"
+# include "Grammar.hpp" // tuples_t
+# include "Expression.hpp" // Expression struct
 class Parser
 {
 private:
 	std::list<std::string> _exprList; // contains all expressions
-	tuples_t _instr_value_array; // vector of std::tuple(instr, value)
+	std::vector<Expression> _parsed_expressions; // parsedn instr, type, value
 
-	bool _checkValue(std::string type, std::string value);
+	eOperandType _getType(std::string type, std::string value);
 
 public:
 	Parser();
@@ -21,10 +22,11 @@ public:
 	virtual ~Parser();
 	Parser & operator=(const Parser &ref);
 
-	bool parseExprList(std::list<std::string>::const_iterator iter_begin,
+	void parseExprList(std::list<std::string>::const_iterator iter_begin,
 std::list<std::string>::const_iterator iter_end);
-	bool semanticCheck();
+	void semanticCheck();
 
 	std::list<std::string> getExprList() const;
+	std::vector<Expression> getParsedExpr() const;
 };
 #endif /* PARSER_H */

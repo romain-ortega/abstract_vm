@@ -1,7 +1,9 @@
 #include <iostream>
 #include <list>
+// #include "../inc/CallStack.hpp"
 #include "../inc/Parser.hpp"
 #include "../inc/Grammar.hpp"
+#include "../inc/Exceptions.hpp"
 
 int main(int argc, char *argv[]) {
 	Parser *parser;
@@ -18,10 +20,21 @@ int main(int argc, char *argv[]) {
 	std::list<std::string>::const_iterator iter_begin = expr_list.begin();
 	std::list<std::string>::const_iterator iter_end = expr_list.end();
 
-	if (!parser->parseExprList(iter_begin, iter_end))
+	try {
+		parser->parseExprList(iter_begin, iter_end);
+	} catch (EntryException e) {
+		std::cerr << e.what() << std::endl;
 		return 1; // syntax error
-	if (!parser->semanticCheck())
+	}
+	try {
+		parser->semanticCheck();
+	} catch (EntryException e) {
+		std::cerr << e.what() << std::endl;
 		return 2; // semantic error
+	}
+
+	// CallStack call_stack(parser->Parser::getParsedExpr);
+	// call_stack.run();
 
 	delete parser;
 	return 0;
