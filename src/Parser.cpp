@@ -87,6 +87,7 @@ eOperandType Parser::_getType(std::string type, std::string value) {
 
 void Parser::semanticCheck() {
 	int line_number = 0;
+	int exit_instr_count = 0;
 	std::vector<Expression>::iterator end = this->_parsed_expressions.end();
 
 	// debug
@@ -105,7 +106,8 @@ void Parser::semanticCheck() {
 			std::cout << ": " << type << " " << value;
 		std::cout << std::endl;
 		// ============= debug
-
+		if (instr == "exit")
+			exit_instr_count++;
 		// check unexpected value/type
 		try {
 			if ((instr.compare("push") != 0 && instr.compare("assert") != 0)
@@ -124,6 +126,10 @@ void Parser::semanticCheck() {
 		}
 	}
 	std::cout << "--------------------------------" << std::endl; // debug
+	if (exit_instr_count < 1)
+		throw EntryException(EntryExceptionReasons::InstrExpected, "exit", line_number);
+	else if (exit_instr_count > 1)
+		throw EntryException(EntryExceptionReasons::UnexpectedIdentifier, "exit", line_number);
 }
 std::list<std::string> Parser::getExprList() const { return this->_exprList; }
 std::vector<Expression> Parser::getParsedExpr() const { return this->_parsed_expressions; }

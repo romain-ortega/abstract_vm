@@ -6,7 +6,9 @@ SRC_DIR = src
 SRC = main.cpp \
 			Parser.cpp \
 			Exceptions.cpp \
-			Expression.cpp
+			Expression.cpp \
+			CallStack.cpp \
+			Factory.cpp
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 
 FLAGS = -Wall -Wextra -Werror -std=c++11 -O2 -pedantic -I $(shell pwd)/inc/

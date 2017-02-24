@@ -1,6 +1,6 @@
 #include <iostream>
 #include <list>
-// #include "../inc/CallStack.hpp"
+#include "../inc/CallStack.hpp"
 #include "../inc/Parser.hpp"
 #include "../inc/Grammar.hpp"
 #include "../inc/Exceptions.hpp"
@@ -33,8 +33,12 @@ int main(int argc, char *argv[]) {
 		return 2; // semantic error
 	}
 
-	// CallStack call_stack(parser->Parser::getParsedExpr);
-	// call_stack.run();
+	CallStack call_stack(parser->Parser::getParsedExpr());
+	try {
+		call_stack.run();
+	} catch (StackException e) {
+		std::cerr << e.what() << std::endl;
+	}
 
 	delete parser;
 	return 0;

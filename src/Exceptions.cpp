@@ -2,7 +2,8 @@
 #include "../inc/Exceptions.hpp"
 
 // Stack exceptions
-StackException::StackException(std::string error_message) : _error_message(error_message) {}
+StackException::StackException(std::string error_message)
+	: _error_message(error_message) {}
 StackException::StackException(const StackException & ref) { *this = ref; }
 StackException::~StackException() throw() {}
 StackException & StackException::operator=(const StackException &ref) {
@@ -10,7 +11,7 @@ StackException & StackException::operator=(const StackException &ref) {
 	return *this;
 }
 const char *StackException::what() const throw() {
-  return this->getError().c_str();
+  return ("Error: " + this->_error_message).c_str();
 }
 std::string StackException::getError() const { return this->_error_message; }
 
@@ -24,6 +25,8 @@ EntryException::EntryException(EntryExceptionReasons reason, std::string element
 		this->_error_message = "Type expected for `" + element + "` instruction";
 	} else if (reason == ValueExpected) { // element = value
 		this->_error_message = "Value expected for `" + element + "` instruction";
+	} else if (reason == InstrExpected) { // element = value
+		this->_error_message = "Instruction `" + element + "` expected";
 	} else if (reason == UnexpectedIdentifier) { // element = instr
 		this->_error_message = "Unexpected identifier for `" + element + "` instruction";
 	} else if (reason == InvalidValue) { // element = value
@@ -51,7 +54,6 @@ EntryException::EntryException(EntryExceptionReasons reason, std::string element
 	//     this->_error_message = "Invalid expression";
 	//     break;
 	// }
-	this->_error_message += " at line " + std::to_string(line_number);
 }
 EntryException::EntryException(const EntryException & ref) { *this = ref; }
 EntryException & EntryException::operator=(const EntryException &ref) {
@@ -63,7 +65,8 @@ EntryException & EntryException::operator=(const EntryException &ref) {
 EntryException::~EntryException() throw() {}
 
 const char *EntryException::what() const throw() {
-  return this->getError().c_str();
+	std::string what = this->getError() + " at line " + std::to_string(this->_line_number);
+  return what.c_str();
 }
 std::string EntryException::getError() const { return this->_error_message; }
 std::string EntryException::getElement() const { return this->_element; }

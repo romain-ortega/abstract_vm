@@ -19,11 +19,12 @@ public:
 
 // EntryException
 enum EntryExceptionReasons {
-	SyntaxError = 0,
-	TypeExpected = 1,
-	ValueExpected = 2,
-	UnexpectedIdentifier = 3,
-	InvalidValue = 4
+	SyntaxError,
+	TypeExpected,
+	ValueExpected,
+	InstrExpected,
+	UnexpectedIdentifier,
+	InvalidValue
 };
 class EntryException : public std::exception
 {
