@@ -3,7 +3,21 @@
 #include "../inc/CallStack.hpp"
 #include "../inc/Exceptions.hpp"
 #include "../inc/Factory.hpp"
-CallStack::CallStack(std::vector<Expression> to_run) : _expressions(to_run) {}
+typedef void (CallStack::*FP)();
+std::map <std::string, FP> CallStack::fmap;
+
+CallStack::CallStack(std::vector<Expression> to_run) : _expressions(to_run) {
+	if (CallStack::fmap.empty()) {
+		CallStack::fmap.insert(std::make_pair("add", &CallStack::add));
+		CallStack::fmap.insert(std::make_pair("div", &CallStack::div));
+		CallStack::fmap.insert(std::make_pair("dump", &CallStack::dump));
+		CallStack::fmap.insert(std::make_pair("exit", &CallStack::exit));
+		CallStack::fmap.insert(std::make_pair("mul", &CallStack::mod));
+		CallStack::fmap.insert(std::make_pair("pop", &CallStack::pop));
+		CallStack::fmap.insert(std::make_pair("print", &CallStack::print));
+		CallStack::fmap.insert(std::make_pair("sub", &CallStack::sub));
+	}
+}
 CallStack::CallStack(const CallStack & ref) { *this = ref; }
 CallStack::~CallStack() {
 	while (!this->_stack.empty())
@@ -16,49 +30,18 @@ CallStack & CallStack::operator=(const CallStack &ref) {
 }
 
 void CallStack::run() {
-	// static std::map<std::string, void (CallStack::*)() const> table {
-	//   {"add", &CallStack::add},
-	//   // {"assert", &CallStack::asserte},
-	//   {"div", &CallStack::div},
-	//   {"dump", &CallStack::dump},
-	//   {"exit", &CallStack::exit},
-	//   {"mod", &CallStack::mod},
-	//   {"mul", &CallStack::mul},
-	//   {"pop", &CallStack::pop},
-	//   {"print", &CallStack::print},
-	//   // {"push", &CallStack::push},
-	//   {"sub", &CallStack::sub}
-	// };
 	if (this->_expressions[this->_expressions.size() - 1].getInstruction() != "exit") {
 		std::cout << this->_expressions.end()->getInstruction() << std::endl;
 		throw StackException("Exit is not the last instruction");
 	}
 	for (std::vector<Expression>::iterator i = this->_expressions.begin(); i != this->_expressions.end(); ++i) {
-		// temporary if forest
 		if ((*i).getInstruction() == "push") {
 			this->push((*i));
 		} else if  ((*i).getInstruction() == "assert") {
 			this->asserte((*i));
-		} else if  ((*i).getInstruction() == "pop") {
-			this->pop();
-		} else if  ((*i).getInstruction() == "dump") {
-			this->dump();
-		} else if  ((*i).getInstruction() == "add") {
-			this->add();
-		} else if  ((*i).getInstruction() == "sub") {
-			this->sub();
-		} else if  ((*i).getInstruction() == "mul") {
-			this->mul();
-		} else if  ((*i).getInstruction() == "div") {
-			this->div();
-		} else if  ((*i).getInstruction() == "mod") {
-			this->mod();
-		} else if  ((*i).getInstruction() == "print") {
-			this->print();
-		} else if  ((*i).getInstruction() == "exit") {
-			this->exit();
 		} else {
-			throw StackException("Wrong instruction: " + (*i).getInstruction());
+			FP fp = CallStack::fmap[(*i).getInstruction()];
+			(this->*fp)();
 		}
 	}
 }
@@ -151,19 +134,16 @@ void CallStack::mod() {
 }
 void CallStack::print() {
   if (this->_stack.size() < 1)
-    throw StackException("Error: print on empty stack");
-  if (this->_stack.back()->getType() != Int8)
-    throw StackException("The last stack value is not an Int8");
+    throw StackException("print: Empty stack");
+  if (this->_stack.back()->getType() != eOperandType::Int8)
+    throw StackException("print: The last stack value is not an 8-bit integer");
   if (!std::isprint(std::stoi(this->_stack.back()->toString())))
-    throw StackException("Character not printable");
+    throw StackException("print: Value is not printable");
   std::cout << static_cast<char>(std::stoi(this->_stack.back()->toString())) << std::endl;
 }
 void CallStack::exit() {
-  // std::cout << this->_output.str();
-  for ( int i = (this->_stack.size() - 1); i >= 0; i--) {
-    delete this->_stack[i];
-    this->_stack.pop_back();
-  }
+	while (!this->_stack.empty())
+		this->_stack.pop_back();
 }
 
 std::vector<const IOperand*> CallStack::getStack() const { return this->_stack; }

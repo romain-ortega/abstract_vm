@@ -24,10 +24,7 @@ public:
 		int cIntType = (aIntType > bIntType) ? aIntType : bIntType;
 		int compType = static_cast<int>(eOperandType::Float);
 
-		if (cIntType >= compType)
-			return false;
-		else
-			return true;
+		return (!(cIntType >= compType));
 	}
 	T cast(eOperandType type, std::string const & value) {
 		if (type == eOperandType::Int8) {

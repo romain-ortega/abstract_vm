@@ -13,6 +13,8 @@ class CallStack
 	private:
 		std::vector<Expression> _expressions; // parsed instr, type, value
 		std::vector<const IOperand*> _stack;
+		typedef void (CallStack::*FP)();
+		static std::map <std::string, FP> fmap;
 
 	public:
 		CallStack(std::vector<Expression> to_run);
