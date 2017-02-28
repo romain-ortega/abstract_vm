@@ -2,7 +2,6 @@
 #include <list>
 #include "../inc/CallStack.hpp"
 #include "../inc/Parser.hpp"
-#include "../inc/Grammar.hpp"
 #include "../inc/Exceptions.hpp"
 
 int main(int argc, char *argv[]) {

@@ -1,12 +1,11 @@
 #include <iostream> // std::cin
 #include <sstream> // std::stringstream, rdbuf
 #include <fstream> // std::ifstream
-#include <stdint.h>
 #include <boost/lexical_cast.hpp>
 #include "../inc/Exceptions.hpp"
 #include "../inc/eOperandType.hpp"
 #include "../inc/Parser.hpp"
-#include "../inc/Grammar.hpp"
+#include "../inc/TGrammar.hpp"
 
 using namespace boost::spirit;
 

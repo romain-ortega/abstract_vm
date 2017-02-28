@@ -11,7 +11,8 @@ StackException & StackException::operator=(const StackException &ref) {
 	return *this;
 }
 const char *StackException::what() const throw() {
-  return ("Error: " + this->_error_message).c_str();
+	std::string *what = new std::string("Error: " + this->getError());
+  return what->c_str();
 }
 std::string StackException::getError() const { return this->_error_message; }
 
@@ -34,26 +35,6 @@ EntryException::EntryException(EntryExceptionReasons reason, std::string element
 	} else {
 		this->_error_message = "Invalid expression";
 	}
-	// switch (reason) {
-	//   case SyntaxError:
-	//     this->_error_message = "Syntax error";
-	//     break;
-	//   case TypeExpected: // element = type
-	//     this->_error_message = "Type expected for `" + element + "` instruction";
-	//     break;
-	//   case ValueExpected: // element = value
-	//     this->_error_message = "Value expected for `" + element + "` instruction";
-	//     break;
-	//   case UnexpectedIdentifier: // element = instr
-	//     this->_error_message = "Unexpected identifier for `" + element + "` instruction";
-	//     break;
-	//   case InvalidValue: // element = value
-	//     this->_error_message = "Value `" + element + "` could not be interpreted as type";
-	//     break;
-	//   default:
-	//     this->_error_message = "Invalid expression";
-	//     break;
-	// }
 }
 EntryException::EntryException(const EntryException & ref) { *this = ref; }
 EntryException & EntryException::operator=(const EntryException &ref) {
@@ -65,8 +46,10 @@ EntryException & EntryException::operator=(const EntryException &ref) {
 EntryException::~EntryException() throw() {}
 
 const char *EntryException::what() const throw() {
-	std::string what = this->getError() + " at line " + std::to_string(this->_line_number);
-  return what.c_str();
+	std::string *what = new std::string(
+		this->getError() + " at line " + std::to_string(this->_line_number)
+	);
+  return what->c_str();
 }
 std::string EntryException::getError() const { return this->_error_message; }
 std::string EntryException::getElement() const { return this->_element; }

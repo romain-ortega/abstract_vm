@@ -30,10 +30,9 @@ CallStack & CallStack::operator=(const CallStack &ref) {
 }
 
 void CallStack::run() {
-	if (this->_expressions[this->_expressions.size() - 1].getInstruction() != "exit") {
-		std::cout << this->_expressions.end()->getInstruction() << std::endl;
+	if (this->_expressions[this->_expressions.size() - 1].getInstruction() != "exit")
 		throw StackException("Exit is not the last instruction");
-	}
+
 	for (std::vector<Expression>::iterator i = this->_expressions.begin(); i != this->_expressions.end(); ++i) {
 		if ((*i).getInstruction() == "push") {
 			this->push((*i));

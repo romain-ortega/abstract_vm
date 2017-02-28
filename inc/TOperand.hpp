@@ -18,14 +18,11 @@ private:
 	std::string  _stringValue;
 
 public:
-	bool needInt(eOperandType aType, eOperandType bType) const {
-		int aIntType = static_cast<int>(aType);
-		int bIntType = static_cast<int>(bType);
-		int cIntType = (aIntType > bIntType) ? aIntType : bIntType;
-		int compType = static_cast<int>(eOperandType::Float);
-
-		return (!(cIntType >= compType));
+	bool hasTypeInt(eOperandType first_type, eOperandType second_type) const {
+		int max_type = (first_type > second_type) ? first_type : second_type;
+		return (!(max_type >= eOperandType::Float));
 	}
+
 	T cast(eOperandType type, std::string const & value) {
 		if (type == eOperandType::Int8) {
 			int int8 = boost::lexical_cast<int>(value);
@@ -81,7 +78,7 @@ public:
 
 		stream.str();
 		stream.clear();
-		if (this->needInt(this->getType(), rhs.getType()))
+		if (this->hasTypeInt(this->getType(), rhs.getType()))
 			stream << static_cast<int>(val);
 		else
 			stream << val;
@@ -108,7 +105,7 @@ public:
 
 		stream.str();
 		stream.clear();
-		if (this->needInt(this->getType(), rhs.getType()))
+		if (this->hasTypeInt(this->getType(), rhs.getType()))
 			stream << static_cast<int>(val);
 		else
 			stream << val;
@@ -135,7 +132,7 @@ public:
 
 		stream.str();
 		stream.clear();
-		if (this->needInt(this->getType(), rhs.getType()))
+		if (this->hasTypeInt(this->getType(), rhs.getType()))
 			stream << static_cast<int>(val);
 		else
 			stream << val;
@@ -158,14 +155,14 @@ public:
 		stream.str(rhs.toString());
 		stream >> val;
 
-		if (this->getValue() == 0)
+		if (!this->_value || !std::stoi(rhs.toString()))
 			throw StackException("Divide by zero");
 
 		val /= this->_value;
 
 		stream.str();
 		stream.clear();
-		if (this->needInt(this->getType(), rhs.getType()))
+		if (this->hasTypeInt(this->getType(), rhs.getType()))
 			stream << static_cast<int>(val);
 		else
 			stream << val;
@@ -185,7 +182,7 @@ public:
 		} catch (boost::bad_lexical_cast e) {
 			std::cerr << e.what() << std::endl;
 		}
-		if (val == 0)
+		if (!val)
 			throw StackException("Modulo by zero");
 
 		if (this->getPrecision() > rhs.getPrecision())
@@ -200,7 +197,7 @@ public:
 
 		stream.str();
 		stream.clear();
-		if (this->needInt(this->getType(), rhs.getType()))
+		if (this->hasTypeInt(this->getType(), rhs.getType()))
 			stream << static_cast<int>(val);
 		else
 			stream << val;

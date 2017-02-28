@@ -5,7 +5,6 @@
 # include <boost/spirit/include/qi_core.hpp> // include files for boost spirit
 # include <boost/config/warning_disable.hpp>
 # include <boost/spirit/include/qi.hpp>
-# include "Grammar.hpp" // tuples_t
 # include "Expression.hpp" // Expression struct
 class Parser
 {
