@@ -42,7 +42,7 @@ std::list<std::string>::const_iterator iter_end) {
 		line_number++;
 		std::string::iterator begin = entry.begin();
 		std::string::iterator end = entry.end();
-		if (!qi::phrase_parse(begin, end, syntax_parser, qi::blank, parsed_expressions))
+		if (!boost::spirit::qi::phrase_parse(begin, end, syntax_parser, boost::spirit::qi::blank, parsed_expressions))
 			throw EntryException(EntryExceptionReasons::SyntaxError, std::string(), line_number);
 	}
 	for (tuples_t::iterator it = parsed_expressions.begin(); it != parsed_expressions.end(); it++) {
@@ -89,22 +89,22 @@ void Parser::semanticCheck() {
 	int exit_instr_count = 0;
 	std::vector<Expression>::iterator end = this->_parsed_expressions.end();
 
-	// debug
-	std::cout << "found entries:" << std::endl;
-	std::cout << "--------------------------------" << std::endl;
+	if (this->flagVerbose()) {
+		std::cout << "found entries:" << std::endl;
+		std::cout << "--------------------------------" << std::endl;
+	}
 	for (std::vector<Expression>::iterator it = this->_parsed_expressions.begin(); it != end; ++it)
 	{
 		line_number++;
-		// ============= debug
 		std::string instr = (*it).getInstruction();
 		std::string type = (*it).getStringType();
 		std::string value = (*it).getValue();
-
-		std::cout << instr;
-		if (!type.empty() && !value.empty())
-			std::cout << ": " << type << " " << value;
-		std::cout << std::endl;
-		// ============= debug
+		if (this->flagVerbose()) {
+			std::cout << instr;
+			if (!type.empty() && !value.empty())
+				std::cout << ": " << type << " " << value;
+			std::cout << std::endl;
+		}
 		if (instr == "exit")
 			exit_instr_count++;
 		// check unexpected value/type
@@ -124,7 +124,8 @@ void Parser::semanticCheck() {
 			std::cerr << e.what() << std::endl;
 		}
 	}
-	std::cout << "--------------------------------" << std::endl; // debug
+	if (this->flagVerbose())
+		std::cout << "--------------------------------" << std::endl;
 	if (exit_instr_count < 1)
 		throw EntryException(EntryExceptionReasons::InstrExpected, "exit", line_number);
 	else if (exit_instr_count > 1)
@@ -132,3 +133,5 @@ void Parser::semanticCheck() {
 }
 std::list<std::string> Parser::getExprList() const { return this->_exprList; }
 std::vector<Expression> Parser::getParsedExpr() const { return this->_parsed_expressions; }
+bool Parser::flagVerbose() const { return this->_verbose; }
+void Parser::setVerbose(bool flag) { this->_verbose = flag; }

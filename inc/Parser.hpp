@@ -11,6 +11,7 @@ class Parser
 private:
 	std::list<std::string> _exprList; // contains all expressions
 	std::vector<Expression> _parsed_expressions; // parsedn instr, type, value
+	bool _verbose;
 
 	eOperandType _getType(std::string type, std::string value);
 
@@ -27,5 +28,7 @@ std::list<std::string>::const_iterator iter_end);
 
 	std::list<std::string> getExprList() const;
 	std::vector<Expression> getParsedExpr() const;
+	bool flagVerbose() const;
+	void setVerbose(bool flag);
 };
 #endif /* PARSER_H */

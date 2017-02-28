@@ -4,7 +4,7 @@
 # include <sstream>
 # include <math.h> // fmod
 # include "IOperand.hpp"
-# include "EOperandType.hpp"
+# include "eOperandType.hpp"
 # include "Exceptions.hpp"
 # include "Factory.hpp"
 # include <boost/lexical_cast.hpp>

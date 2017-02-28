@@ -11,11 +11,11 @@ SRC = main.cpp \
 			Factory.cpp
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 
-FLAGS = -Wall -Wextra -Werror -std=c++11 -O2 -pedantic -I $(shell pwd)/inc/
-FLAGS_BOOST = -I ~/.brew/include/boost
+FLAGS = -Wall -Wextra -Werror -std=c++11 -O2 -pedantic -I $(shell pwd)/inc/ -I ~/.brew/include
+BOOST = -L ~/.brew/lib/ -lboost_program_options
 
 $(NAME): $(OBJ_DIR) $(OBJ)
-	clang++ $(FLAGS) $(FLAGS_BOOST) -o $(NAME) $(OBJ)
+	clang++ $(FLAGS) $(BOOST) -o $(NAME) $(OBJ)
 
 all: $(NAME)
 

@@ -1,19 +1,47 @@
+#include <boost/program_options.hpp>
 #include <iostream>
 #include <list>
 #include "../inc/CallStack.hpp"
 #include "../inc/Parser.hpp"
 #include "../inc/Exceptions.hpp"
 
-int main(int argc, char *argv[]) {
+namespace po = boost::program_options;
+static Parser *parse_opt(int argc, char *argv[]) {
+	std::string file;
+	bool verbose = false;
 	Parser *parser;
 
-	if (argc > 1) {
-		if (argc > 2)
-			std::cout << "Usage: ./abstract_vm [filanme (or read stdin)]" << std::endl;
-		parser = new Parser(argv[1]); // expressions from file
-	} else {
-		parser = new Parser(); // expressions from stdin
+    try {
+        po::options_description desc("Allowed options");
+        desc.add_options() //option, parameter, description
+			("help,h", "print usage message")
+			("file,f", po::value(&file), "pathname of avm file")
+			("verbose,v", po::bool_switch(&verbose), "verbose execution")
+        ;
+
+        po::variables_map vm;
+		po::store(po::parse_command_line(argc, argv, desc), vm);
+		po::notify(vm);
+
+        if (vm.count("help")) {
+			std::cout << desc;
+            exit(0);
+        }
+    } catch(std::exception& e) {
+		std::cerr << e.what() << std::endl;
+		exit(1);
+    }
+	if (file.empty())
+		parser = new Parser();
+	else {
+		parser = new Parser(file);
 	}
+	parser->setVerbose(verbose);
+	return parser;
+}
+
+int main(int argc, char *argv[]) {
+	Parser *parser = parse_opt(argc, argv);
 
 	std::list<std::string> expr_list = parser->getExprList();
 	std::list<std::string>::const_iterator iter_begin = expr_list.begin();
