@@ -1,0 +1,31 @@
+push int8(0000000000001)
+push int8(1)
+mul
+dump
+pop
+
+push int8(0000000000001)
+push int8(1)
+div
+dump
+pop
+
+push int8(0000000000001)
+push int8(1)
+add
+dump
+pop
+
+push int8(0000000000001)
+push int8(1)
+sub
+dump
+pop
+
+push int8(0000000000001)
+push int8(1)
+mod
+dump
+pop
+
+exit

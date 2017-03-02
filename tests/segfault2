@@ -1,0 +1,6 @@
+push double(42)
+push double(42)
+dump
+mod
+dump
+exit

@@ -1,0 +1,6 @@
+push double(0100100)
+push int8(9)
+dump
+div
+dump
+exit

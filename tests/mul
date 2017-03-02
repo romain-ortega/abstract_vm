@@ -1,0 +1,36 @@
+push int8(1)
+push int8(10)
+mul
+dump
+pop
+
+push int8(-10)
+push double(10)
+mul
+dump
+pop
+
+push int8(10)
+push double(1)
+div
+dump
+pop
+
+push double(2.5)
+push int8(10)
+mul
+dump
+pop
+
+push int32(342342342)
+push double(12312312.033)
+mul
+dump
+pop
+
+push int32(000000000000000000000)
+push int32(21234567) ; 1234567
+mul
+dump
+
+exit

@@ -1,0 +1,24 @@
+push int32(4)
+push double(3.434)
+mod
+dump
+pop
+
+push double(3.434)
+push int32(4)
+mod
+dump
+pop
+
+push int32(42)
+push double(0)
+mod
+dump
+pop
+
+push double(0)
+push int32(42)
+mod
+dump
+
+exit
