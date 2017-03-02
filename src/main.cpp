@@ -11,26 +11,26 @@ static Parser *parse_opt(int argc, char *argv[]) {
 	bool verbose = false;
 	Parser *parser;
 
-    try {
-        po::options_description desc("Allowed options");
-        desc.add_options() //option, parameter, description
+	try {
+		po::options_description desc("Allowed options");
+		desc.add_options() //option, parameter, description
 			("help,h", "print usage message")
 			("file,f", po::value(&file), "pathname of avm file")
 			("verbose,v", po::bool_switch(&verbose), "verbose execution")
-        ;
+		;
 
-        po::variables_map vm;
+		po::variables_map vm;
 		po::store(po::parse_command_line(argc, argv, desc), vm);
 		po::notify(vm);
 
-        if (vm.count("help")) {
+		if (vm.count("help")) {
 			std::cout << desc;
-            exit(0);
-        }
-    } catch(std::exception& e) {
+			exit(0);
+		}
+	} catch(std::exception& e) {
 		std::cerr << e.what() << std::endl;
 		exit(1);
-    }
+	}
 	if (file.empty())
 		parser = new Parser();
 	else {
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 		return 2; // semantic error
 	}
 
-	CallStack call_stack(parser->Parser::getParsedExpr());
+	CallStack call_stack(parser->getParsedExpr());
 	try {
 		call_stack.run();
 	} catch (StackException e) {

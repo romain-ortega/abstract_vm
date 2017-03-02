@@ -53,24 +53,30 @@ void CallStack::push(Expression const & value) {
 
 void CallStack::pop() {
 	if (this->_stack.empty())
-		throw StackException("pop on empty stack !");
+		throw StackException("pop on empty stack");
 	this->_stack.pop_back();
 }
 void CallStack::dump() {
+	std::string s;
 	if (!this->_stack.empty())
 		for (std::vector<const IOperand*>::iterator i = this->_stack.begin(); i < this->_stack.end(); ++i) {
-			std::cout << (*i)->toString() << std::endl;
+			s = (*i)->toString();
+			// clean string
+			s.erase(s.find_last_not_of('0') + 1, std::string::npos);
+			if (s.back() == '.')
+				s.pop_back();
+			std::cout << ((s.empty()) ? "0" : s) << std::endl;
 		}
 }
 void CallStack::asserte(Expression const & value) {
 	const IOperand *tmp = Factory::getInstance().createOperand(value.getType(), value.getValue());
 
 	if (this->_stack.empty())
-		throw StackException("assert on empty stack !");
+		throw StackException("assert on empty stack");
 	if (this->_stack.back()->getType() != tmp->getType())
-		throw StackException("assert on different type !");
+		throw StackException("assert on different type");
 	if (stod(this->_stack.back()->toString()) != stod(tmp->toString()))
-		throw StackException("assert between " + this->_stack.back()->toString() + " and " + tmp->toString() + " is false !");
+		throw StackException("assert between " + this->_stack.back()->toString() + " and " + tmp->toString() + " is false");
 }
 void CallStack::add() {
 	const IOperand *tmp;
@@ -134,7 +140,7 @@ void CallStack::mod() {
 }
 void CallStack::print() {
   if (this->_stack.size() < 1)
-    throw StackException("print: Empty stack");
+    throw StackException("print: empty stack");
   if (this->_stack.back()->getType() != eOperandType::Int8)
     throw StackException("print: The last stack value is not an 8-bit integer");
   if (!std::isprint(std::stoi(this->_stack.back()->toString())))

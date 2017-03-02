@@ -14,7 +14,7 @@ class Operand : virtual public IOperand
 private:
 	eOperandType _type;
 	unsigned int _precision;
-	T            _value;
+	T            _value = 0;
 	std::string  _stringValue;
 
 public:
@@ -25,11 +25,7 @@ public:
 
 	T cast(eOperandType type, std::string const & value) {
 		if (type == eOperandType::Int8) {
-			int int8 = boost::lexical_cast<int>(value);
-			if(int8 < std::numeric_limits<int8_t>::min()
-					|| int8 > std::numeric_limits<int8_t>::max())
-				throw StackException("Int8 value is out of range");
-			return int8;
+			return boost::numeric_cast<int8_t>(boost::lexical_cast<int>(value));
 		} else if (type == eOperandType::Int16) {
 			return boost::lexical_cast<short>(value);
 		} else if (type == eOperandType::Int32) {
@@ -43,11 +39,21 @@ public:
 
 	Operand<T>(eOperandType type, std::string const & value)
 	: _type(type), _stringValue(value) {
+		std::string s = value;
 		this->_precision = type; // int value (0 -> 4)
+
+		// remove trailing 0
+		s.erase(s.find_last_not_of('0') + 1, std::string::npos);
+		// remove trailing point
+		if (s.back() == '.')
+			s.pop_back();
+		if (s.empty())
+			s = "0";
+
 		try {
-			this->_value = cast(type, value);
+			this->_value = cast(type, s.c_str());
 		} catch(boost::bad_lexical_cast&) {
-			throw StackException("Out of range value");
+			throw StackException("out of range value");
 		}
 	};
 	Operand<T>(const Operand &ref) {
@@ -62,150 +68,48 @@ public:
 	};
 
 	IOperand const *operator+(IOperand const & rhs) const {
-		eOperandType mostAccurate;
-		std::stringstream stream;
-		double val;
-
-		if (this->getPrecision() > rhs.getPrecision())
-			mostAccurate = this->getType();
-		else
-			mostAccurate = rhs.getType();
-
-		stream.str(rhs.toString());
-		stream >> val;
-
-		val += this->_value;
-
-		stream.str();
-		stream.clear();
-		if (this->hasTypeInt(this->getType(), rhs.getType()))
-			stream << static_cast<int>(val);
-		else
-			stream << val;
-
-		Factory &f = Factory::getInstance();
-		const IOperand * io = f.createOperand(mostAccurate, stream.str());
-
-		return io;
+		double result = static_cast<double>(stod(rhs.toString())) + this->_value;
+		eOperandType precision = (rhs.getPrecision() > static_cast<int>(this->_precision)) ?
+			rhs.getType() : this->_type;
+		return Factory::getInstance().createOperand(precision, std::to_string(result));
 	}
 	IOperand const *operator-(IOperand const & rhs) const {
-		eOperandType mostAccurate;
-		std::stringstream stream;
-		double val;
-
-		if (this->getPrecision() > rhs.getPrecision())
-			mostAccurate = this->getType();
-		else
-			mostAccurate = rhs.getType();
-
-		stream.str(rhs.toString());
-		stream >> val;
-
-		val -= this->_value;
-
-		stream.str();
-		stream.clear();
-		if (this->hasTypeInt(this->getType(), rhs.getType()))
-			stream << static_cast<int>(val);
-		else
-			stream << val;
-
-		Factory &f = Factory::getInstance();
-		const IOperand * io = f.createOperand(mostAccurate, stream.str());
-
-		return io;
+		double result = static_cast<double>(stod(rhs.toString())) - this->_value;
+		eOperandType precision = (rhs.getPrecision() > static_cast<int>(this->_precision)) ?
+			rhs.getType() : this->_type;
+		return Factory::getInstance().createOperand(precision, std::to_string(result));
 	}
 	IOperand const *operator*(IOperand const & rhs) const {
-		eOperandType mostAccurate;
-		std::stringstream stream;
-		double val;
-
-		if (this->getPrecision() > rhs.getPrecision())
-			mostAccurate = this->getType();
-		else
-			mostAccurate = rhs.getType();
-
-		stream.str(rhs.toString());
-		stream >> val;
-
-		val *= this->_value;
-
-		stream.str();
-		stream.clear();
-		if (this->hasTypeInt(this->getType(), rhs.getType()))
-			stream << static_cast<int>(val);
-		else
-			stream << val;
-
-		Factory &f = Factory::getInstance();
-		const IOperand * io = f.createOperand(mostAccurate, stream.str());
-
-		return io;
+		double result = static_cast<double>(stod(rhs.toString())) * this->_value;
+		eOperandType precision = (rhs.getPrecision() > static_cast<int>(this->_precision)) ?
+			rhs.getType() : this->_type;
+		return Factory::getInstance().createOperand(precision, std::to_string(result));
 	}
 	IOperand const *operator/(IOperand const & rhs) const {
-		eOperandType mostAccurate;
-		std::stringstream stream;
-		double val;
-
-		if (this->getPrecision() > rhs.getPrecision())
-			mostAccurate = this->getType();
-		else
-			mostAccurate = rhs.getType();
-
-		stream.str(rhs.toString());
-		stream >> val;
-
-		if (!this->_value)
-			throw StackException("Divide by zero");
-
-		val /= this->_value;
-
-		stream.str();
-		stream.clear();
-		if (this->hasTypeInt(this->getType(), rhs.getType()))
-			stream << static_cast<int>(val);
-		else
-			stream << val;
-
-		Factory &f = Factory::getInstance();
-		const IOperand * io = f.createOperand(mostAccurate, stream.str());
-
-		return io;
-	}
-	IOperand const *operator%(IOperand const & rhs) const {
-		eOperandType mostAccurate;
-		std::stringstream stream;
 		double val = 0;
-
 		try {
 			val = boost::lexical_cast<double>(rhs.toString());
 		} catch (boost::bad_lexical_cast e) {
-			throw StackException("Out of range value");
+			throw StackException("out of range value");
 		}
+		if (!val)
+			throw StackException("Divide by zero");
+
+		if (!this->_value)
+			return Factory::getInstance().createOperand(eOperandType::Int8, std::string("0"));
+		double result = static_cast<double>(stod(rhs.toString())) / this->_value;
+		eOperandType precision = (rhs.getPrecision() > static_cast<int>(this->_precision)) ?
+			rhs.getType() : this->_type;
+		return Factory::getInstance().createOperand(precision, std::to_string(result));
+	}
+	IOperand const *operator%(IOperand const & rhs) const {
 		if (!this->_value)
 			throw StackException("Modulo by zero");
 
-		if (this->getPrecision() > rhs.getPrecision())
-			mostAccurate = this->getType();
-		else
-			mostAccurate = rhs.getType();
-
-		stream.str(rhs.toString());
-		stream >> val;
-
-		val = fmod(val, this->_value);
-
-		stream.str(std::string());
-		stream.clear();
-		if (this->hasTypeInt(this->getType(), rhs.getType()))
-			stream << static_cast<int>(val);
-		else
-			stream << val;
-
-		Factory &f = Factory::getInstance();
-		const IOperand * io = f.createOperand(mostAccurate, stream.str());
-
-		return io;
+		double result = fmod(static_cast<double>(stod(rhs.toString())), this->_value);
+		eOperandType precision = (rhs.getPrecision() > static_cast<int>(this->_precision)) ?
+			rhs.getType() : this->_type;
+		return Factory::getInstance().createOperand(precision, std::to_string(result));
 	}
 
 	std::string const & toString(void) const { return this->_stringValue; }
