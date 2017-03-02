@@ -12,7 +12,8 @@ CallStack::CallStack(std::vector<Expression> to_run) : _expressions(to_run) {
 		CallStack::fmap.insert(std::make_pair("div", &CallStack::div));
 		CallStack::fmap.insert(std::make_pair("dump", &CallStack::dump));
 		CallStack::fmap.insert(std::make_pair("exit", &CallStack::exit));
-		CallStack::fmap.insert(std::make_pair("mul", &CallStack::mod));
+		CallStack::fmap.insert(std::make_pair("mod", &CallStack::mod));
+		CallStack::fmap.insert(std::make_pair("mul", &CallStack::mul));
 		CallStack::fmap.insert(std::make_pair("pop", &CallStack::pop));
 		CallStack::fmap.insert(std::make_pair("print", &CallStack::print));
 		CallStack::fmap.insert(std::make_pair("sub", &CallStack::sub));

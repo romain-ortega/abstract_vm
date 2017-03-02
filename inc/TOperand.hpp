@@ -155,7 +155,7 @@ public:
 		stream.str(rhs.toString());
 		stream >> val;
 
-		if (!this->_value || !std::stoi(rhs.toString()))
+		if (!this->_value)
 			throw StackException("Divide by zero");
 
 		val /= this->_value;
@@ -175,14 +175,14 @@ public:
 	IOperand const *operator%(IOperand const & rhs) const {
 		eOperandType mostAccurate;
 		std::stringstream stream;
-		double val;
+		double val = 0;
 
 		try {
 			val = boost::lexical_cast<double>(rhs.toString());
 		} catch (boost::bad_lexical_cast e) {
-			std::cerr << e.what() << std::endl;
+			throw StackException("Out of range value");
 		}
-		if (!val)
+		if (!this->_value)
 			throw StackException("Modulo by zero");
 
 		if (this->getPrecision() > rhs.getPrecision())
@@ -195,7 +195,7 @@ public:
 
 		val = fmod(val, this->_value);
 
-		stream.str();
+		stream.str(std::string());
 		stream.clear();
 		if (this->hasTypeInt(this->getType(), rhs.getType()))
 			stream << static_cast<int>(val);
